@@ -1,4 +1,4 @@
-#include "GpsDeviceWatcher.hpp"
+#include "DeviceDataReader.hpp"
 
 #include <fcntl.h>
 #include <string.h>
@@ -8,11 +8,11 @@
 #include <cerrno>
 #include <iostream>
 
-namespace Watchers {
+namespace Device {
 
-struct GpsDeviceWatcher::Impl {
+struct DeviceDataReader::Impl {
 
-    explicit Impl(const std::string& pathToDevice, GpsDeviceWatcher* owner)
+    explicit Impl(const std::string& pathToDevice, DeviceDataReader* owner)
         : mPathToDevice(pathToDevice)
         , mOwner(owner)
     {
@@ -85,7 +85,7 @@ struct GpsDeviceWatcher::Impl {
             return;
         }
         mIsListenerThreadActive.store(true);
-        mListenerThread = std::thread(std::bind(&GpsDeviceWatcher::Impl::poll, this));
+        mListenerThread = std::thread(std::bind(&DeviceDataReader::Impl::poll, this));
     }
 
     void stopListenerThread()
@@ -151,7 +151,7 @@ struct GpsDeviceWatcher::Impl {
 private:
     std::string mPathToDevice;
 
-    GpsDeviceWatcher* mOwner;
+    DeviceDataReader* mOwner;
 
     std::atomic_int32_t mFileDescriptor{-1};
     std::atomic_int32_t mEPollFileDescriptor{-1};
@@ -160,19 +160,19 @@ private:
     std::atomic_bool mIsListenerThreadActive{false};
 };
 
-GpsDeviceWatcher::GpsDeviceWatcher(const std::string& pathToDevice)
+DeviceDataReader::DeviceDataReader(const std::string& pathToDevice)
     : mImpl(std::make_unique<Impl>(pathToDevice, this))
 {
 }
 
-GpsDeviceWatcher::~GpsDeviceWatcher()
+DeviceDataReader::~DeviceDataReader()
 {
     if (mImpl) {
         stopListenerThread();
     }
 }
 
-bool GpsDeviceWatcher::tryToStartWatcher()
+bool DeviceDataReader::tryToStartWatcher()
 {
     if (mImpl->initWatch()) {
         mImpl->startListenerThread();
@@ -182,18 +182,23 @@ bool GpsDeviceWatcher::tryToStartWatcher()
     return false;
 }
 
-void GpsDeviceWatcher::stopListenerThread()
+bool DeviceDataReader::isListenerActive() const
+{
+    return mImpl->isListenerThreadActive();
+}
+
+void DeviceDataReader::stopListenerThread()
 {
     mImpl->stopListenerThread();
 }
 
-void GpsDeviceWatcher::subscribeToReadDataNotification(std::function<void(const std::vector<uint8_t>&)> callback)
+void DeviceDataReader::subscribeToReadDataNotification(std::function<void(const std::vector<uint8_t>&)> callback)
 {
     std::lock_guard<std::mutex> lock(mSubscribersMutex);
     mReadDataCallbacks.emplace_back(std::move(callback));
 }
 
-void GpsDeviceWatcher::notifyReadData(const std::vector<uint8_t>& data)
+void DeviceDataReader::notifyReadData(const std::vector<uint8_t>& data)
 {
     std::cout << "Notify read data with " << data.size() << " bytes" << std::endl;
     decltype(mReadDataCallbacks) callbacks;
@@ -206,4 +211,4 @@ void GpsDeviceWatcher::notifyReadData(const std::vector<uint8_t>& data)
         std::invoke(readDataCallback, data);
     }
 }
-} // namespace Watchers
+} // namespace Device

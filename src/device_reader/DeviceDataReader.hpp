@@ -8,19 +8,21 @@
 #include <thread>
 #include <vector>
 
-namespace Watchers {
+namespace Device {
 
-class GpsDeviceWatcher {
+class DeviceDataReader {
 public:
-    explicit GpsDeviceWatcher(const std::string& pathToDevice);
+    explicit DeviceDataReader(const std::string& pathToDevice);
 
-    virtual ~GpsDeviceWatcher();
+    virtual ~DeviceDataReader();
 
     bool tryToStartWatcher();
 
     void stopListenerThread();
 
     void subscribeToReadDataNotification(std::function<void(const std::vector<uint8_t>&)> callback);
+
+    bool isListenerActive() const;
 
 private:
     void notifyReadData(const std::vector<uint8_t>&);
@@ -33,4 +35,4 @@ private:
 
     std::mutex mSubscribersMutex;
 };
-} // namespace Watchers
+} // namespace Device

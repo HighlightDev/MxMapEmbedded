@@ -25,7 +25,11 @@ else()
   )
 endif()
 
-add_executable(${PROJECT_NAME} src/main.cpp src/watchers/GpsDeviceWatcher.cpp)
+add_executable(
+  ${PROJECT_NAME}
+  src/main.cpp src/device_reader/DeviceDataReader.cpp
+  src/data_dump/DataDumper.cpp src/data_dump/SerializerBase.cpp
+  src/data_dump/BytesSerializer.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
