@@ -1,10 +1,11 @@
+## DOcker setup
 docker build -t mx-map-embedded:alpine-x86 .
 
 docker run -it --mount type=bind,src=$(pwd),dst=/home/MxMap mx-map-embedded:alpine-x86
 
 cd /home/MxMap/
 
-
+## Simulate device
 # 1. Создаем именованный пайп с именем dbg_pipe
 mkfifo /tmp/dbg_pipe
 
@@ -19,3 +20,8 @@ echo "Получено из пайпа: $response"
 # 4. Удаляем пайп после использования
 rm tmp/dbg_pipe
 
+## Service setup
+chmod +x /home/MxMap/deploy/mxmapembedded
+cp /home/MxMap/deploy/mxmapembedded /etc/init.d/
+rc-update add mxmapembedded default
+rc-service mxmapembedded start

@@ -21,4 +21,6 @@ RUN cmake --version
 
 RUN apk add clang
 
+RUN apk add gdb
+
 ENTRYPOINT ["/bin/sh"]

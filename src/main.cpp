@@ -2,18 +2,42 @@
 #include "data_dump/DataDumper.hpp"
 #include "device_reader/DeviceDataReader.hpp"
 
+#include <unistd.h>
+
 #include <iostream>
 #include <string>
 
-int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
+int main(int argc, char* argv[])
 {
+    std::string dumpPath, gpsDevicePath;
+    int32_t opt;
+    // Retrieve the options:
+    while ((opt = getopt(argc, argv, "o:g:")) != -1) {
+        switch (opt) {
+        case 'g': {
+            gpsDevicePath = optarg;
+            break;
+        }
+        case 'o': {
+            dumpPath = optarg;
+            break;
+        }
+        default:
+            break;
+        }
+    }
+
+    if (dumpPath.empty() || gpsDevicePath.empty()) {
+        std::cout << "Error. Empty path: dumpPath: " << dumpPath << ", gpsDevicePath" << gpsDevicePath << std::endl;
+        return -1;
+    }
+
     constexpr uint32_t dumpInterval = 1000; // ms
-    const std::string dumpPathToFile = "/tmp/dbg_output";
     std::shared_ptr<DataDump::DataDumper> mDataDumper = std::make_shared<DataDump::DataDumper>(
-        dumpInterval, std::make_shared<DataDump::BytesSerializer>(dumpPathToFile, DataDump::eWriteFileMode::APPEND));
+        dumpInterval, std::make_shared<DataDump::BytesSerializer>(dumpPath, DataDump::eWriteFileMode::APPEND));
     mDataDumper->initialize();
 
-    std::unique_ptr<Device::DeviceDataReader> mGpsDeviceReader = std::make_unique<Device::DeviceDataReader>("/tmp/dbg_pipe");
+    std::unique_ptr<Device::DeviceDataReader> mGpsDeviceReader = std::make_unique<Device::DeviceDataReader>(gpsDevicePath);
     mGpsDeviceReader->subscribeToReadDataNotification(
         [dumperWeak = std::weak_ptr<DataDump::DataDumper>(mDataDumper)](const auto& pendingBytes) {
             if (const auto& dumperSp = dumperWeak.lock()) {

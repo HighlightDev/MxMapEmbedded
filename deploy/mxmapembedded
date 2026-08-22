@@ -1,0 +1,20 @@
+#!/sbin/openrc-run
+
+depend() {
+    need localmount
+}
+
+name="MxMapEmbedded"
+description="Embedded functions for MxMap application"
+
+command="/usr/local/bin/MxMapEmbedded"
+command_args="-g /tmp/dbg_pipe \
+-o /tmp/output"
+
+command_background=true
+
+pidfile="/run/${RC_SVCNAME}.pid"
+
+# To have logs
+output_log="/var/log/${RC_SVCNAME}.log"
+error_log="/var/log/${RC_SVCNAME}.err"
