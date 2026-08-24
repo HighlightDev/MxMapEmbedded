@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface
+    name="org.bluez.LEAdvertisingManager1">
+
+    <!--
+          @brief Registers an advertisement object to be sent over the LE
+			Advertising channel.  The service must be exported
+			under interface LEAdvertisement1. InvalidArguments
+			indicates that the object has invalid or conflicting
+			properties.  InvalidLength indicates that the data
+			provided generates a data packet which is too long.
+			The properties of this object are parser when it is
+			registered, and any changes are ignored.
+			Currently only one advertisement at a time is supported,
+			attempting to register two advertisements will result in
+			an AlreadyExists error.
+
+			Possible errors:
+					org.bluez.Error.InvalidArguments:	Indicates that the object has invalid or conflicting properties.
+          org.bluez.Error.AlreadyExists:	Indicates the object is already registered.
+          org.bluez.Error.InvalidLength:	Indicates that the data provided generates a data packet which is
+    too long.
+          org.bluez.Error.NotPermitted:	Indicates the maximum number of advertisement instances has been
+    reached.
+          @param [in] advertisement object
+          @param [in] options
+        -->
+    <method name="RegisterAdvertisement">
+      <arg name="advertisement" type="o" direction="in" />
+      <arg name="options" type="a{sv}" direction="in" />
+    </method>
+
+    <!--
+      @brief This unregisters an advertisement that has been
+			prevously registered.  The object path parameter must
+			match the same value that has been used on registration.
+      @param [in] advertisement object
+
+			Possible errors: org.bluez.Error.InvalidArguments
+					 org.bluez.Error.DoesNotExist
+        -->
+    <method name="UnregisterAdvertisement">
+      <arg name="advertisement" type="o" direction="in"></arg>
+    </method>
+
+    <!--
+      @brief Number of active advertising instances.
+    -->
+    <property name="ActiveInstances" type="y" access="read"></property>
+
+    <!--
+      @brief Number of available advertising instances.
+    -->
+    <property name="SupportedInstances" type="y" access="read"></property>
+
+    <!-- 
+      @brief List of supported system includes.
+      Possible values:
+        "tx-power":	
+        "appearance":	
+        "local-name":	
+        "rsi":	
+    -->
+    <property name="SupportedIncludes" type="as" access="read"></property>
+
+    <!-- 
+      @brief List of supported Secondary channels. Secondary channels can be used to advertise with the
+    corresponding PHY.
+      Possible values:
+        "1M":	
+        "2M":	
+        "Coded":	
+    -->
+    <property name="SupportedSecondaryChannels" type="as" access="read"></property>
+
+    <!-- 
+      @brief Enumerates Advertising-related controller capabilities useful to the client.
+      Possible values:
+        byte MaxAdvLen:	Max advertising data length
+        byte MaxScnRspLen:	Max advertising scan response length
+        int16 MinTxPower:	Min advertising tx power (dBm)
+        int16 MaxTxPower:	Max advertising tx power (dBm)
+    -->
+    <property name="SupportedCapabilities" type="a{sv}" access="read"></property>
+
+    <!-- 
+      @brief List of supported platform features. If no features are available on the platform, the
+    SupportedFeatures array will be empty.
+      Possible values:
+        "CanSetTxPower":	Indicates whether platform can specify tx power on each advertising instance.
+        "HardwareOffload":	Indicates whether multiple advertising will be offloaded to the controller.
+    -->
+    <property name="SupportedFeatures" type="as" access="read"></property>
+  </interface>
+</node>

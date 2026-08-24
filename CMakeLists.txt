@@ -39,26 +39,30 @@ target_compile_options(sdbus-c++ PRIVATE -fcoroutines)
 
 add_custom_command(
   OUTPUT
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/proxy.hpp
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/adapter.hpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisingManager1_proxy.hpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisement1_adapter.hpp
   COMMAND
     ${CMAKE_CURRENT_BINARY_DIR}/submodules/sdbus-cpp/tools/sdbus-c++-xml2cpp
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.sdbuscpp.ExampleManager.Planet1.xml
-    --proxy=${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/proxy.hpp
-    --adaptor=${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/adapter.hpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.bluez.LEAdvertisingManager1.xml
+    --proxy=${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisingManager1_proxy.hpp
+  COMMAND
+    ${CMAKE_CURRENT_BINARY_DIR}/submodules/sdbus-cpp/tools/sdbus-c++-xml2cpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.bluez.LEAdvertisement1.xml
+    --adaptor=${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisement1_adapter.hpp
   DEPENDS
     ${CMAKE_CURRENT_BINARY_DIR}/submodules/sdbus-cpp/tools/sdbus-c++-xml2cpp
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.sdbuscpp.ExampleManager.Planet1.xml
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.bluez.LEAdvertisingManager1.xml
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_schema/org.bluez.LEAdvertisement1.xml
   COMMENT "Generating D-Bus interfaces for ${PROJECT_NAME}.")
 
 add_custom_target(
   generate_sdbus_sources
   DEPENDS
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/proxy.hpp
-    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/adapter.hpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisingManager1_proxy.hpp
+    ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/generated_interfaces/org.bluez.LEAdvertisement1_adapter.hpp
 )
 
-set(SDBUS_INCLUDE_DIR ${RPOJECT_SOURCE_DIR}/submodules/sdbus-cpp/include/)
+set(SDBUS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/submodules/sdbus-cpp/include/)
 set(DBUS_GENERATED_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/)
 
 add_executable(
