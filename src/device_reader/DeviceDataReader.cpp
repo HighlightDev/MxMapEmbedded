@@ -8,7 +8,7 @@
 #include <cerrno>
 #include <iostream>
 
-namespace Device {
+namespace DeviceReader {
 
 struct DeviceDataReader::Impl {
 
@@ -211,4 +211,4 @@ void DeviceDataReader::notifyReadData(const std::vector<uint8_t>& data)
         std::invoke(readDataCallback, data);
     }
 }
-} // namespace Device
+} // namespace DeviceReader

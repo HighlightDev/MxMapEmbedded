@@ -30,6 +30,8 @@
     <method name="RegisterAdvertisement">
       <arg name="advertisement" type="o" direction="in" />
       <arg name="options" type="a{sv}" direction="in" />
+      <annotation name="org.freedesktop.DBus.Method.Async" value="client" />
+      <annotation name="org.freedesktop.DBus.Method.Async.ClientImpl" value="future" />
     </method>
 
     <!--

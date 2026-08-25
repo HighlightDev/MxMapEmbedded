@@ -22,7 +22,7 @@
     <!--
       @brief List of UUIDs to include in the "Service UUID" field of the Advertising Data.	
     -->
-    <property name="ServiceUUIDs" type="as" access="read"></property>
+    <!-- OPTIONAL <property name="ServiceUUIDs" type="as" access="read"></property> -->
 
     <!--
       @brief Manufacturer Data fields to include in the Advertising Data. Keys are the Manufacturer ID to
@@ -33,13 +33,13 @@
     <!--
       @brief List of UUIDs to include in the "Service Solicitation" field of the Advertising Data.
     -->
-    <property name="SolicitUUIDs" type="as" access="read"></property>
+    <!-- OPTIONAL <property name="SolicitUUIDs" type="as" access="read"></property> -->
 
     <!--
       @brief Service Data elements to include in the Advertising Data. The keys are the UUID to associate
     with the data.
     -->
-    <property name="ServiceData" type="a{sv}" access="read"></property>
+    <!-- OPTIONAL <property name="ServiceData" type="a{sv}" access="read"></property> -->
 
     <!--
       @brief Key is the advertising type and value is the data as byte array.
@@ -49,55 +49,56 @@
               Example:
               <Transport Discovery> <Organization Flags...> 0x26 0x01 0x01...
     -->
-    <property name="Data" type="a{yv}" access="read"></property>
+    <!-- OPTIONAL <property name="Data" type="a{yv}" access="read"></property> -->
 
     <!--
       @brief List of UUIDs to include in the "Service UUID" field of the Scan Response Data.
     -->
-    <property name="ScanResponseServiceUUIDs" type="as" access="read"></property>
+    <!-- OPTIONAL <property name="ScanResponseServiceUUIDs" type="as" access="read"></property> -->
 
     <!--
       @brief Manufacturer Data fields to include in the Scan Response Data. Keys are the Manufacturer ID
     to associate with the data.
     -->
-    <property name="ScanResponseManufacturerData" type="a{qv}" access="read"></property>
+    <!-- OPTIONAL <property name="ScanResponseManufacturerData" type="a{qv}"
+    access="read"></property> -->
 
     <!--
       @brief List of UUIDs to include in the "Service Solicitation" field of the Scan Response Data.
     -->
-    <property name="ScanResponseSolicitUUIDs" type="as" access="read"></property>
+    <!-- OPTIONAL <property name="ScanResponseSolicitUUIDs" type="as" access="read"></property> -->
 
     <!--
       @brief Service Data elements to include in the Scan Response Data. The keys are the UUID to
     associate with the data.
     -->
-    <property name="ScanResponseServiceData" type="a{sv}" access="read"></property>
+    <!-- OPTIONAL <property name="ScanResponseServiceData" type="a{sv}" access="read"></property> -->
 
     <!--
       @brief Scan Response Data to include. Key is the advertising type and value is the data as byte
     array.
     -->
-    <property name="ScanResponseData" type="a{yv}" access="read"></property>
+    <!-- OPTIONAL <property name="ScanResponseData" type="a{yv}" access="read"></property> -->
 
     <!--
       @brief Advertise as general discoverable. When present this will override adapter Discoverable
     property. Note: This property shall not be set when Type is set to "broadcast".
     -->
-    <property name="Discoverable" type="b" access="read"></property>
+    <!-- OPTIONAL <property name="Discoverable" type="b" access="read"></property> -->
 
     <!--
       @brief The discoverable timeout in seconds. A value of zero means that the timeout is disabled and
     it will stay in discoverable/limited mode forever. 
       Note: This property shall not be set when Type is set to "broadcast".
     -->
-    <property name="DiscoverableTimeout" type="q" access="read"></property>
+    <!-- OPTIONAL <property name="DiscoverableTimeout" type="q" access="read"></property> -->
 
     <!--
       @brief List of features to be included in the advertising packet.
       Possible values:
       See org.bluez.LEAdvertisingManager(5) SupportedIncludes property.
     -->
-    <property name="Includes" type="as" access="read"></property>
+    <!-- OPTIONAL <property name="Includes" type="as" access="read"></property> -->
 
     <!--
       @brief Local name to be used in the advertising report. If the string is too big to fit into the
@@ -110,7 +111,7 @@
       @brief Appearance to be used in the advertising report.
       Possible values: as found on GAP Service.
     -->
-    <property name="Appearance" type="q" access="read"></property>
+    <!-- OPTIONAL <property name="Appearance" type="q" access="read"></property> -->
 
     <!--
       @brief Rotation duration of the advertisement in seconds. If there are other applications
@@ -131,7 +132,7 @@
       "2M":	
       "Coded":	
     -->
-    <property name="SecondaryChannel" type="s" access="read"></property>
+    <!-- OPTIONAL <property name="SecondaryChannel" type="s" access="read"></property> -->
 
     <!--
       @brief Minimum advertising interval to be used by the advertising set, in milliseconds. Acceptable
@@ -155,12 +156,12 @@
           org.bluez.LEAdvertisingManager(5).
       Values must be in range [-127 to +20], where units are in dBm.
     -->
-    <property name="TxPower" type="n" access="read"></property>
+    <!-- OPTIONAL <property name="TxPower" type="n" access="read"></property> -->
 
     <!--
       @brief Instance of the advertisement. Set by bluetoothd after advertisement is registered with
     org.bluez.LEAdvertisingManager(5).
     -->
-    <property name="Instance" type="y" access="readwrite"></property>
+    <!-- OPTIONAL <property name="Instance" type="y" access="readwrite"></property> -->
   </interface>
 </node>

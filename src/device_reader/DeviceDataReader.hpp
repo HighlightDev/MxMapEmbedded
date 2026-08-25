@@ -8,7 +8,7 @@
 #include <thread>
 #include <vector>
 
-namespace Device {
+namespace DeviceReader {
 
 class DeviceDataReader {
 public:
@@ -35,4 +35,4 @@ private:
 
     std::mutex mSubscribersMutex;
 };
-} // namespace Device
+} // namespace DeviceReader

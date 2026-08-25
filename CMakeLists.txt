@@ -65,11 +65,26 @@ add_custom_target(
 set(SDBUS_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/submodules/sdbus-cpp/include/)
 set(DBUS_GENERATED_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src/ipc/dbus_generated/)
 
-add_executable(
-  ${PROJECT_NAME}
-  src/main.cpp src/device_reader/DeviceDataReader.cpp
-  src/data_dump/DataDumper.cpp src/data_dump/SerializerBase.cpp
-  src/data_dump/BytesSerializer.cpp)
+set(SOURCES
+    src/main.cpp
+    src/device_reader/DeviceDataReader.cpp
+    src/data_dump/DataDumper.cpp
+    src/data_dump/SerializerBase.cpp
+    src/data_dump/BytesSerializer.cpp
+    src/ipc/bluetooth/proxies/LEAdvertisingManager1Proxy.cpp
+    src/ipc/bluetooth/proxies/ObjectManagerProxy.cpp
+    src/ipc/bluetooth/adapters/LEAdvertisement1Adapter.cpp)
+
+set(HEADERS
+    src/device_reader/DeviceDataReader.hpp
+    src/data_dump/DataDumper.hpp
+    src/data_dump/SerializerBase.hpp
+    src/data_dump/BytesSerializer.hpp
+    src/ipc/bluetooth/proxies/LEAdvertisingManager1Proxy.hpp
+    src/ipc/bluetooth/proxies/ObjectManagerProxy.hpp
+    src/ipc/bluetooth/adapters/LEAdvertisement1Adapter.hpp)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(
   ${PROJECT_NAME}
@@ -96,7 +111,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 add_custom_target(
   codeformat
-  COMMAND clang-format
+  COMMAND clang-format -i -style=file ${SOURCES} ${HEADERS}
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   COMMENT "Formatting source files...")
 
