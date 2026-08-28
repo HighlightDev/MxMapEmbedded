@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface
+    name="org.bluez.GattCharacteristic1">
+
+    <!--
+      @brief Issues a request to read the value of the characteristic and returns the value if the
+    operation was successful.
+        Possible options:
+          uint16 offset:	
+          Read start offset in bytes.
+
+          uint16 mtu (server only):	
+          Exchange MTU in bytes.
+
+          object device (server only):	
+          Device object.
+
+          string link (server only):	
+          Link type.
+
+          Possible values:
+
+          "BR/EDR":	
+          "LE":	
+          Possible Errors:
+
+          org.bluez.Error.Failed:	Possible values: string 0x80 - 0x9f
+          org.bluez.Error.InProgress:	
+          org.bluez.Error.NotPermitted:	
+          org.bluez.Error.NotAuthorized:	
+          org.bluez.Error.InvalidOffset:	
+          org.bluez.Error.NotSupported:	
+   -->
+    <method name="ReadValue">
+      <arg type="ay" direction="out"></arg>
+      <arg type="a{sv}" name="options" direction="in"></arg>
+    </method>
+
+    <!-- 
+      @brief Issues a request to write the value of the characteristic.
+        Possible options:
+
+        uint16 offset:	
+        Write start offset in bytes.
+
+        string type:	
+        Possible values:
+
+        "command":	Use Write without response procedure.
+        "request":	Use Write with response procedure.
+        "reliable":	Use Reliable Write procedure.
+        uint16 mtu:	
+        Exchanged MTU (Server only).
+
+        object device:	
+        Device path (Server only).
+
+        string link:	
+        Link type (Server only).
+
+        Possible values:
+
+        "BR/EDR":	
+        "LE":	
+        boolean prepare-authorize:	
+        True if prepare authorization request.
+
+        Possible Errors:
+
+        org.bluez.Error.Failed:	Possible values: string 0x80 - 0x9f
+        org.bluez.Error.InProgress:	
+        org.bluez.Error.NotPermitted:	
+        org.bluez.Error.InvalidValueLength:	
+        org.bluez.Error.NotAuthorized:	
+        org.bluez.Error.NotSupported:	
+        org.bluez.Error.ImproperlyConfigured:	
+   -->
+    <method name="WriteValue">
+      <arg type="ay" name="value" direction="in"></arg>
+      <arg type="a{sv}" name="options" direction="in"></arg>
+    </method>
+
+    <!-- 
+      @brief Acquire file descriptor and MTU for writing. Only sockets are supported. Usage of WriteValue
+    will be locked causing it to return NotPermitted error.
+        For server the MTU returned shall be equal or smaller than the negotiated MTU.
+
+        For client it only works with characteristic that has WriteAcquired property which relies on
+    write-without-response Flag.
+
+        To release the lock the client shall close the file descriptor, a HUP is generated in case the
+    device is disconnected.
+
+        Note: the MTU can only be negotiated once and is symmetric therefore this method may be delayed in
+    order to have the exchange MTU completed, because of that the file descriptor is closed during
+    reconnections as the MTU has to be renegotiated.
+
+        Possible options:
+
+        object device:	
+        Object Device (Server only).
+
+        uint16 mtu:	
+        Exchanged MTU (Server only).
+
+        string link:	
+        Link type (Server only).
+
+        Possible values:
+
+        "BR/EDR":	
+        "LE":	
+        Possible Errors:
+
+        org.bluez.Error.Failed:	
+        org.bluez.Error.NotSupported:	
+   -->
+    <!-- OPTIONAL <method name="AcquireWrite">
+      <arg type="h" direction="out"/>
+      <arg type="q" direction="out"/>
+      <arg type="a{sv}" name="options" direction="in"></arg>
+   </method> -->
+
+    <!-- 
+      @brief Acquire file descriptor and MTU for notify. Only sockets are support.
+
+        Usage of StartNotify will be locked causing it to return org.bluez.Error.NotPermitted.
+
+        For server the MTU returned shall be equal or smaller than the negotiated MTU.
+
+        Only works with characteristic that has NotifyAcquired property which relies on presence of
+    "notify" or "indicate" Flag and no other client have called StartNotify().
+
+        Notification are enabled during this procedure so StartNotify() shall not be called, any
+    notification will be dispatched via file descriptor therefore the Value property is not affected
+    during the time where notify has been acquired.
+
+        To release the lock the client shall close the file descriptor, a HUP is generated in case the
+    device is disconnected.
+
+        As a client if indication procedure is used the confirmation is generated automatically once
+    received, for a server if the file descriptor is writable (POLLOUT) then upon receiving a
+    confirmation from the client one byte (0x01) is written to the file descriptor.
+
+        Note: the MTU can only be negotiated once and is symmetric therefore this method may be delayed in
+    order to have the exchange MTU completed, because of that the file descriptor is closed during
+    reconnections as the MTU has to be renegotiated.
+
+        Possible options:
+
+        object device:	
+        Object Device (Server only).
+
+        uint16 mtu:	
+        Exchanged MTU (Server only).
+
+        string link:	
+        Link type (Server only).
+
+        Possible values:
+
+        "BR/EDR":	
+        "LE":	
+        Possible Errors:
+
+        org.bluez.Error.Failed:	
+        org.bluez.Error.NotSupported:	
+        org.bluez.Error.NotPermitted:	
+   -->
+    <!-- OPTIONAL <method name="AcquireNotify">
+      <arg type="h" direction="out"/>
+      <arg type="q" direction="out"/>
+      <arg type="a{sv}" name="options" direction="in"></arg>
+   </method> -->
+
+    <!-- 
+    @brief Starts a notification session from this characteristic if it supports value notifications or
+    indications.
+
+      Possible Errors:
+
+      org.bluez.Error.Failed:	
+      org.bluez.Error.NotPermitted:	
+      org.bluez.Error.InProgress:	
+      org.bluez.Error.NotConnected:	
+      org.bluez.Error.NotSupported:	
+   -->
+    <method name="StartNotify"></method>
+
+    <!-- 
+    @brief Stops or cancel session previously created by StartNotify().
+
+        Note that notifications from a characteristic are shared between sessions thus calling StopNotify
+    will release a single session.
+
+        Possible Errors:
+
+        org.bluez.Error.Failed:	
+   -->
+    <method name="StopNotify"></method>
+
+    <!-- 
+      @brief Confirms value was received.
+
+        Possible Errors:
+
+        org.bluez.Error.Failed
+    -->
+    <method name="Confirm"></method>
+
+    <!-- 
+      @brief 128-bit characteristic UUID.
+   -->
+    <property name="UUID" type="s" access="read"></property>
+
+    <!-- 
+      @brief Object path of the GATT service the characteristic belongs to.
+   -->
+    <property name="Service" type="o" access="read"></property>
+
+    <!-- 
+      @brief The cached value of the characteristic. This property gets updated only after a successful
+    read request and when a notification or indication is received, upon which a PropertiesChanged
+    signal will be emitted.
+   -->
+    <property name="Value" type="ay" access="read"></property>
+
+    <!-- 
+      @brief True, if this characteristic has been acquired by any client using AcquireWrite.
+
+        For client properties is omitted in case 'write-without-response' flag is not set.
+
+        For server the presence of this property indicates that AcquireWrite is supported.
+   -->
+    <!-- OPTIONAL <property name="WriteAcquired" type="b" access="read"></property> -->
+
+    <!-- 
+      @brief True, if this characteristic has been acquired by any client using AcquireNotify.
+
+        For client this properties is omitted in case 'notify' flag is not set.
+
+        For server the presence of this property indicates that AcquireNotify is supported.
+   -->
+    <!-- OPTIONAL <property name="NotifyAcquired" type="b" access="read"></property> -->
+
+    <!-- 
+      @brief True, if notifications or indications on this characteristic are currently enabled.
+   -->
+    <property name="Notifying" type="b" access="read"></property>
+
+    <!-- 
+      @brief Defines how the characteristic value can be used. See Core spec "Table 3.5: Characteristic
+    Properties bit field", and "Table 3.8: Characteristic Extended Properties bit field".
+
+        The "x-notify" and "x-indicate" flags restrict access to notifications and indications by imposing
+    write restrictions on a characteristic's client characteristic configuration descriptor.
+
+        Possible values:
+
+        "broadcast":	
+        "read":	
+        "write-without-response":	
+        "write":	
+        "notify":	
+        "indicate":	
+        "authenticated-signed-writes":	
+        "extended-properties":	
+        "reliable-write":	
+        "writable-auxiliaries":	
+        "encrypt-read":	
+        "encrypt-write":	
+        "encrypt-notify" (Server only):	
+        "encrypt-indicate" (Server only):	
+        "encrypt-authenticated-read":	
+        "encrypt-authenticated-write":	
+        "encrypt-authenticated-notify" (Server only):	
+        "encrypt-authenticated-indicate" (Server only):	
+        "secure-read" (Server only):	
+        "secure-write" (Server only):	
+        "secure-notify" (Server only):	
+        "secure-indicate" (Server only):	
+        "authorize":	
+   -->
+    <property name="Flags" type="as" access="read"></property>
+
+    <!-- 
+      @brief Characteristic handle. When available in the server it would attempt to use to allocate into
+    the database which may fail, to auto allocate the value 0x0000 shall be used which will cause
+    the allocated handle to be set once registered.
+   -->
+    <!-- OPTIONAL <property name="Handle" type="q" access="read"></property> -->
+
+    <!-- 
+      @brief Characteristic MTU, this is valid both for ReadValue() and WriteValue() but either method
+    can use long procedures when supported.
+   -->
+    <!-- OPTIONAL <property name="MTU" type="q" access="read"></property> -->
+
+  </interface>
+</node>

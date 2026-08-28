@@ -16,6 +16,20 @@ ObjectManagerProxy::~ObjectManagerProxy()
     unregisterProxy();
 }
 
+sdbus::ObjectPath ObjectManagerProxy::getRegisteredObjectPath() const
+{
+    return getProxy().getObjectPath();
+}
+
+void ObjectManagerProxy::initialize()
+{
+    handleExistingObjects();
+}
+
+void ObjectManagerProxy::deinitialize()
+{
+}
+
 void ObjectManagerProxy::handleExistingObjects()
 {
     const auto managedObjects = GetManagedObjects();

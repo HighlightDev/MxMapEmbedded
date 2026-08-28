@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ipc/bluetooth/interfaces/IDBusObjectExistable.hpp"
+
 #include <memory>
 #include <tuple>
 #include <type_traits>
@@ -36,7 +38,9 @@ public:
     }
 
     template<typename DBusObjectType, typename... ConstructorArgs>
-    std::enable_if_t<has_type<DBusObjectType, DBusObjectsTuple_t>::value, std::shared_ptr<DBusObjectType>>
+    std::enable_if_t<
+        std::is_base_of<Interfaces::IDBusObjectExistable, DBusObjectType>::value && has_type<DBusObjectType, DBusObjectsTuple_t>::value,
+        std::shared_ptr<DBusObjectType>>
     createDBusObject(ConstructorArgs&&... args)
     {
         std::get<std::shared_ptr<DBusObjectType>>(mDBusObjectsTypes)
@@ -48,6 +52,16 @@ public:
     std::enable_if_t<has_type<DBusObjectType, DBusObjectsTuple_t>::value, std::shared_ptr<DBusObjectType>> getDBusObject() const
     {
         return std::get<std::shared_ptr<DBusObjectType>>(mDBusObjectsTypes);
+    }
+
+    void initializeDBusObjects()
+    {
+        std::apply([](auto&&... objectsPack) { ((objectsPack ? objectsPack->initialize() : void()), ...); }, mDBusObjectsTypes);
+    }
+
+    void deinitializeDBusObjects()
+    {
+        std::apply([](auto&&... objectsPack) { ((objectsPack ? objectsPack->deinitialize() : void()), ...); }, mDBusObjectsTypes);
     }
 };
 } // namespace IPC::Bluetooth

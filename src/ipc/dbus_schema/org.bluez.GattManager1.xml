@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface
+    name="org.bluez.GattManager1">
+
+    <!-- 
+      @brief Registers a local GATT services hierarchy as described above (GATT Server) and/or GATT
+    profiles (GATT Client).
+      The application object path together with the D-Bus system bus connection ID define the
+    identification of the application registering a GATT based service (org.bluez.GattService(5))
+    and/or profile (org.bluez.GattProfile(5)).
+      Possible errors:
+        org.bluez.Error.InvalidArguments:	
+        org.bluez.Error.AlreadyExists:	
+    -->
+    <method name="RegisterApplication">
+      <arg type="o" name="application" direction="in"></arg>
+      <arg type="a{sv}" name="options" direction="in"></arg>
+      <annotation name="org.freedesktop.DBus.Method.Async" value="client" />
+      <annotation name="org.freedesktop.DBus.Method.Async.ClientImpl" value="future" />
+    </method>
+
+    <!--
+      @brief This unregisters the services and/or profiles that has been previously registered using
+    RegisterApplication(). The object path parameter must match the same value that has been used on
+    registration.
+      Possible errors:
+        org.bluez.Error.InvalidArguments:	
+        org.bluez.Error.DoesNotExist:	
+    -->
+    <method name="UnregisterApplication">
+      <arg type="o" name="application" direction="in"></arg>
+    </method>
+  </interface>
+</node>

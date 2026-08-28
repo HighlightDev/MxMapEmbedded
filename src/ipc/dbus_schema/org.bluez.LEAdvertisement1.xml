@@ -22,7 +22,7 @@
     <!--
       @brief List of UUIDs to include in the "Service UUID" field of the Advertising Data.	
     -->
-    <!-- OPTIONAL <property name="ServiceUUIDs" type="as" access="read"></property> -->
+    <property name="ServiceUUIDs" type="as" access="read"></property>
 
     <!--
       @brief Manufacturer Data fields to include in the Advertising Data. Keys are the Manufacturer ID to
@@ -84,14 +84,14 @@
       @brief Advertise as general discoverable. When present this will override adapter Discoverable
     property. Note: This property shall not be set when Type is set to "broadcast".
     -->
-    <!-- OPTIONAL <property name="Discoverable" type="b" access="read"></property> -->
+    <property name="Discoverable" type="b" access="read"></property>
 
     <!--
       @brief The discoverable timeout in seconds. A value of zero means that the timeout is disabled and
     it will stay in discoverable/limited mode forever. 
       Note: This property shall not be set when Type is set to "broadcast".
     -->
-    <!-- OPTIONAL <property name="DiscoverableTimeout" type="q" access="read"></property> -->
+    <property name="DiscoverableTimeout" type="q" access="read"></property>
 
     <!--
       @brief List of features to be included in the advertising packet.

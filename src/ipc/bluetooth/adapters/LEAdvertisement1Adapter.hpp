@@ -1,10 +1,13 @@
 #pragma once
 
 #include "generated_interfaces/org.bluez.LEAdvertisement1_adapter.hpp"
-#include "sdbus-c++/sdbus-c++.h"
+#include "ipc/bluetooth/interfaces/IDBusObjectExistable.hpp"
+
+#include <sdbus-c++/sdbus-c++.h>
 
 namespace IPC::Bluetooth::Adapters {
-class LEAdvertisement1Adapter final : public sdbus::AdaptorInterfaces<::org::bluez::LEAdvertisement1_adaptor> {
+class LEAdvertisement1Adapter final : public sdbus::AdaptorInterfaces<::org::bluez::LEAdvertisement1_adaptor>,
+                                      public IPC::Bluetooth::Interfaces::IDBusObjectExistable {
     using Base_t = sdbus::AdaptorInterfaces<::org::bluez::LEAdvertisement1_adaptor>;
 
     const std::string mAdvertisingType;
@@ -15,6 +18,12 @@ public:
     ~LEAdvertisement1Adapter();
 
     void Release() override;
+
+    void initialize() override;
+
+    void deinitialize() override;
+
+    sdbus::ObjectPath getRegisteredObjectPath() const override;
 
     /*
         Determines the type of advertising packet requested.
@@ -27,7 +36,8 @@ public:
     /*/
         List of UUIDs to include in the "Service UUID" field of the Advertising Data.
     */
-    // OPTIONAL std::vector<std::string> ServiceUUIDs() override;
+    std::vector<std::string> ServiceUUIDs() override;
+
     /*
         Manufacturer Data fields to include in the Advertising Data. Keys are the Manufacturer ID to
         associate with the data.
@@ -63,13 +73,13 @@ public:
 
     // OPTIONAL  std::map<uint8_t, sdbus::Variant> ScanResponseData() override;
 
-    // OPTIONAL  bool Discoverable() override;
+    bool Discoverable() override;
 
     /*
         The discoverable timeout in seconds. A value of zero means that the timeout is disabled and
         it will stay in discoverable/limited mode forever.
     */
-    // OPTIONAL uint16_t DiscoverableTimeout() override;
+    uint16_t DiscoverableTimeout() override;
 
     // OPTIONAL std::vector<std::string> Includes() override;
 

@@ -1,16 +1,25 @@
 #pragma once
 
-#include "sdbus-c++/sdbus-c++.h"
+#include "ipc/bluetooth/interfaces/IDBusObjectExistable.hpp"
+
+#include <sdbus-c++/sdbus-c++.h>
 
 namespace IPC::Bluetooth::Proxies {
 
-class ObjectManagerProxy final : public sdbus::ProxyInterfaces<sdbus::ObjectManager_proxy> {
+class ObjectManagerProxy final : public sdbus::ProxyInterfaces<sdbus::ObjectManager_proxy>,
+                                 public IPC::Bluetooth::Interfaces::IDBusObjectExistable {
 public:
     explicit ObjectManagerProxy(sdbus::IConnection& connection, sdbus::ServiceName destination, sdbus::ObjectPath objectPath);
 
     virtual ~ObjectManagerProxy();
 
     void handleExistingObjects();
+
+    void initialize() override;
+
+    void deinitialize() override;
+
+    sdbus::ObjectPath getRegisteredObjectPath() const override;
 
 private:
     void onInterfacesAdded(

@@ -7,7 +7,7 @@ namespace IPC::Bluetooth::Adapters {
 
 LEAdvertisement1Adapter::LEAdvertisement1Adapter(sdbus::IConnection& connection, sdbus::ObjectPath objectPath)
     : Base_t(connection, std::move(objectPath))
-    , mAdvertisingType(true ? "broadcast" : "peripheral")
+    , mAdvertisingType("peripheral")
 {
     registerAdaptor();
 }
@@ -15,6 +15,19 @@ LEAdvertisement1Adapter::LEAdvertisement1Adapter(sdbus::IConnection& connection,
 LEAdvertisement1Adapter::~LEAdvertisement1Adapter()
 {
     unregisterAdaptor();
+}
+
+sdbus::ObjectPath LEAdvertisement1Adapter::getRegisteredObjectPath() const
+{
+    return getObject().getObjectPath();
+}
+
+void LEAdvertisement1Adapter::initialize()
+{
+}
+
+void LEAdvertisement1Adapter::deinitialize()
+{
 }
 
 void LEAdvertisement1Adapter::Release()
@@ -27,10 +40,10 @@ std::string LEAdvertisement1Adapter::Type()
     return mAdvertisingType;
 }
 
-// std::vector<std::string> LEAdvertisement1Adapter::ServiceUUIDs()
-// {
-//     return {}; // leave it empty, later we can provide service UUID when ble connection will be established
-// }
+std::vector<std::string> LEAdvertisement1Adapter::ServiceUUIDs()
+{
+    return {}; // leave it empty, later we can provide service UUID when ble connection will be established
+}
 
 std::map<uint16_t, sdbus::Variant> LEAdvertisement1Adapter::ManufacturerData()
 {
@@ -86,15 +99,15 @@ std::map<uint16_t, sdbus::Variant> LEAdvertisement1Adapter::ManufacturerData()
 //     return {}; // for now empty as we are working as broadcast beacon
 // }
 
-// bool LEAdvertisement1Adapter::Discoverable()
-// {
-//     return false;
-// }
+bool LEAdvertisement1Adapter::Discoverable()
+{
+    return true;
+}
 
-// uint16_t LEAdvertisement1Adapter::DiscoverableTimeout()
-// {
-//     return 0; // for now as we are broadcast beacon - always send advertisment packets
-// }
+uint16_t LEAdvertisement1Adapter::DiscoverableTimeout()
+{
+    return 0; // for now as we are broadcast beacon - always send advertisment packets
+}
 
 // std::vector<std::string> LEAdvertisement1Adapter::Includes()
 // {

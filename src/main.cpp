@@ -2,7 +2,10 @@
 #include "data_dump/DataDumper.hpp"
 #include "device_reader/DeviceDataReader.hpp"
 #include "ipc/bluetooth/TDBusObjectsManager.hpp"
+#include "ipc/bluetooth/adapters/GpsDataGattServiceAdapter.hpp"
 #include "ipc/bluetooth/adapters/LEAdvertisement1Adapter.hpp"
+#include "ipc/bluetooth/adapters/ObjectManagerAdapter.hpp"
+#include "ipc/bluetooth/proxies/GattManager1Proxy.hpp"
 #include "ipc/bluetooth/proxies/LEAdvertisingManager1Proxy.hpp"
 #include "ipc/bluetooth/proxies/ObjectManagerProxy.hpp"
 
@@ -65,28 +68,38 @@ int main(int argc, char* argv[])
         const auto mngrPtr = std::make_unique<IPC::Bluetooth::TDBusObjectsManager<
             IPC::Bluetooth::Proxies::LEAdvertisingManager1Proxy,
             IPC::Bluetooth::Proxies::ObjectManagerProxy,
-            IPC::Bluetooth::Adapters::LEAdvertisement1Adapter>>();
+            IPC::Bluetooth::Proxies::GattManager1Proxy,
+            IPC::Bluetooth::Adapters::LEAdvertisement1Adapter,
+            IPC::Bluetooth::Adapters::ObjectManagerAdapter,
+            IPC::Bluetooth::Adapters::GpsDataGattServiceAdapter>>();
 
-        mngrPtr->createDBusObject<IPC::Bluetooth::Proxies::LEAdvertisingManager1Proxy>(
-            *connectionPtr, sdbus::ServiceName{"org.bluez"}, sdbus::ObjectPath{"/org/bluez/hci0"});
+        const auto bluezServiceName = sdbus::ServiceName{"org.bluez"};
+
+        auto advertisementMngrPtr = mngrPtr->createDBusObject<IPC::Bluetooth::Proxies::LEAdvertisingManager1Proxy>(
+            *connectionPtr, bluezServiceName, sdbus::ObjectPath{"/org/bluez/hci0"});
 
         mngrPtr->createDBusObject<IPC::Bluetooth::Proxies::ObjectManagerProxy>(
-            *connectionPtr, sdbus::ServiceName{"org.bluez"}, sdbus::ObjectPath{"/"});
+            *connectionPtr, bluezServiceName, sdbus::ObjectPath{"/"});
 
         const auto advertisementObjectPath = sdbus::ObjectPath{"/org/mxmap/advertisement"};
 
         mngrPtr->createDBusObject<IPC::Bluetooth::Adapters::LEAdvertisement1Adapter>(
             *connectionPtr, sdbus::ObjectPath{advertisementObjectPath});
 
+        const auto gattRootObjectPath = sdbus::ObjectPath{"/org/mxmap/gattroot"};
+        mngrPtr->createDBusObject<IPC::Bluetooth::Adapters::ObjectManagerAdapter>(
+            *connectionPtr, gattRootObjectPath); // Register object manager at gatt root path
+
+        mngrPtr->createDBusObject<IPC::Bluetooth::Proxies::GattManager1Proxy>(
+            *connectionPtr, bluezServiceName, gattRootObjectPath);
+
+        mngrPtr->createDBusObject<IPC::Bluetooth::Adapters::GpsDataGattServiceAdapter>(
+            *connectionPtr, sdbus::ObjectPath{"/org/mxmap/gattroot/gpsService"});
+
         connectionPtr->enterEventLoopAsync();
 
-        auto objectMngrPtr = mngrPtr->getDBusObject<IPC::Bluetooth::Proxies::ObjectManagerProxy>();
+        mngrPtr->initializeDBusObjects();
 
-        if (objectMngrPtr) {
-            objectMngrPtr->handleExistingObjects();
-        }
-
-        auto advertisementMngrPtr = mngrPtr->getDBusObject<IPC::Bluetooth::Proxies::LEAdvertisingManager1Proxy>();
         try {
             if (advertisementMngrPtr) {
                 // Async call: it does not hold the connection while pending, so the event loop
@@ -112,6 +125,8 @@ int main(int argc, char* argv[])
         } catch (const std::exception& ex) {
             std::cout << "Exception during advertisement handling! Error message: " << ex.what() << std::endl;
         }
+
+        mngrPtr->deinitializeDBusObjects();
 
         connectionPtr->leaveEventLoop();
     }
